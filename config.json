@@ -1,7 +1,7 @@
 {
   "language":[["中文",""]],
   "title": ["fn-share 小程序"],
-  "header": ["<h1 class='text-center'>fn-share 小程序列表</h1>"],
+  "header": ["<h1 class='text-center mt-3'>fn-share 小程序列表</h1>"],
   "translate1": ["版本安装包"],
   
   "groups": [
