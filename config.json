@@ -1,0 +1,31 @@
+{
+  "language":[["中文",""]],
+  "title": ["fn-share 小程序"],
+  "header": ["<h1 class='text-center'>fn-share 小程序列表</h1>"],
+  "translate1": ["版本安装包"],
+  
+  "groups": [
+    { "desc": ["影音网关"],
+      
+      "dapps": [
+        { "id": "alist_cfg",
+          "name": ["AList配置器"],
+          "version": "1.0",
+          "favicon": "release/alist_cfg.png",
+          "package": "release/alist_cfg_1_0.zip",
+          "parameter": ["name=010.AList配置器"]
+        },
+        { "id": "yunso_play",
+          "name": ["云搜播"],
+          "version": "1.0",
+          "favicon": "release/yunso_play.png",
+          "package": "release/yunso_play_1_0.zip",
+          "parameter": [""]
+        }
+      ]
+    }
+  ],
+  
+  "max_display_event": 64,
+  "translate2": ["最近事件"]
+}

@@ -1,0 +1,271 @@
+#!/usr/bin/env python3
+#
+# NBC dAPP homepage builder
+# author: wayne chan
+# 2024/10/03
+
+import os, sys, re, time, json, hashlib, traceback
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+cfg_file = os.path.join(base_dir,'config.json')
+if not os.path.isfile(cfg_file):
+  raise IOError('can not find config.json')
+
+cfg = {}
+with open(cfg_file,'rt') as f:
+  cfg = json.load(f)
+
+lang_list = cfg.get('language',[])
+if not lang_list: lang_list = [['Default','']]
+
+_HTML_HEAD1 = '''<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="//www.fn-share.com/www/css/bootstrap.min.css" rel="stylesheet">
+<title>'''
+
+_HTML_HEAD2 = '''</title>
+</head>
+<body>
+
+<style>
+.dapp-icon {
+  position: relative;
+  top: -20%;
+  width: 72px;
+  height: 72px;
+}
+.copy-it:hover {
+  opacity: 0.5;
+}
+</style>
+
+<div class="container">
+'''
+
+_HTML_TAIL = '''
+</div>  <!--- end of container --->
+
+<div class="modal" tabindex="-1" id="event-dialog">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="justify-content:center">
+        <h5 class="modal-title"></h5>
+      </div>
+      <div class="modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<script src="//www.fn-share.com/www/js/jquery-3.6.0.slim.min.js"></script>
+<script src="//www.fn-share.com/www/js/popper.min.js"></script>
+<script src="//www.fn-share.com/www/js/bootstrap.min.js"></script>
+
+<script>
+function wait__(promise_obj, wait) {
+  var abort_fn = null;
+  let abortable_promise = Promise.race([ promise_obj,
+    new Promise( function(resolve, reject) {
+      abort_fn = function() { reject(new Error('TIMEOUT')) };
+    })
+  ]);
+  
+  setTimeout(()=>abort_fn(),wait);
+  return abortable_promise;
+}
+
+$( () => {
+  $('svg.copy-it').on('click', ev => {
+    let owner = $(ev.target).parent();
+    let urlNode = owner.find('.url-content');
+    let url = urlNode.text();
+    if (!url) return;
+    
+    url = $('<a href="' + url + '"></a>');
+    url = url.prop('href')
+    if (url) {
+      let args = urlNode.data('args') || '';
+      if (args) url += '?' + args;
+      navigator.clipboard.writeText(url).then( () => alert('URL copied!') );
+    }
+  });
+  
+  $('#stat-table-area').on('click', ev => {
+    let currItem = $('#stat-table-area .list-group-item.active');
+    if (currItem.length == 0) return;
+    let url = currItem.data('index');
+    if (!url) return;
+    
+    wait__(fetch(url),20000).then( res => {
+      if (res.status == 200)
+        return res.text();
+      else return null;
+    }, e => null ).then( data => {
+      if (typeof data == 'string') {
+        let b = data.split(/[\\r\\n]+/);
+        if (b.length >= 3) {
+          b.shift();
+          let titl = b.shift();
+          let body = b.join('\\n');
+          $('#event-dialog .modal-title').html(titl);
+          $('#event-dialog .modal-body').html(body);
+          $('#event-dialog').modal('show');
+        }
+      }
+      else alert('Request failed, please retry later');
+    });
+  });
+});
+</script>
+</body>
+</html>
+'''
+
+_HTML_GROUP_HEAD = '''
+<div class="dapp-group mt-5 mb-3">
+<h2 class="text-center">%s</h2>
+<hr class="mb-4" />
+'''
+
+_HTML_GROUP_TAIL = '''
+</div>  <!--- end of dapp-group --->
+'''
+
+_HTML_COPY_SVG = '''<svg class="copy-it" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'''
+
+_HTML_GROUP_ITEM = '''
+<div class="row mt-2">
+  <div class="col-3 text-end">
+    <img class="dapp-icon" src="%s" />
+  </div>
+  <div class="col-3"><a%s>%s</a><br>%s %s</div>
+  <div class="col-6">%s &nbsp;%s<br><span class="url-content font-monospace" data-args="%s">%s</span></div>
+</div>
+'''
+
+def build_group(group, lang_idx, lang_ext):
+  group_desc = group['desc'][lang_idx]
+  s = _HTML_GROUP_HEAD % (group_desc,)
+  
+  dapps = group.get('dapps',[])
+  for dapp in dapps:
+    dapp_id = dapp['id']
+    name = dapp['name'][lang_idx]
+    ver = dapp['version']
+    package = dapp['package']
+    favicon = dapp['favicon']
+    
+    doc_dir = dapp_id + ('_' + lang_ext if lang_ext else '')
+    doc_url = doc_dir + '/index.html' if os.path.isdir(os.path.join(base_dir,doc_dir)) else ''
+    if doc_url: doc_url = ' href="%s" target="_blank"' % (doc_url,)
+    
+    trans1 = cfg['translate1'][lang_idx]
+    args = dapp.get('parameter',None)
+    if isinstance(args,list):
+      args = args[lang_idx]
+    else: args = ''
+    s += _HTML_GROUP_ITEM % (favicon,doc_url,name,dapp_id,ver,trans1,_HTML_COPY_SVG,args,package)
+  
+  s += _HTML_GROUP_TAIL
+  return s
+
+def build_dapp_group(lang_idx, lang_ext):
+  lang = ''
+  if len(lang_list) > 1:
+    for desc,ext in lang_list:
+      if lang: lang += ' | '
+      if lang_ext == ext:
+        lang += '<a>%s</a>' % (desc,)
+      else:
+        lang += '<a href="index_%s.html">%s</a>' % (ext,desc)
+  
+  s_title  = cfg['title'][lang_idx]
+  s_header = cfg['header'][lang_idx]
+  s = _HTML_HEAD1 + s_title + _HTML_HEAD2 + s_header
+  if lang:
+    s += '\n<div class="text-center mb-5">' + lang + '</div>'
+  
+  for group in cfg.get('groups',[]):
+    s += build_group(group,lang_idx,lang_ext)
+  
+  return s
+
+MAX_EVENTS = cfg.get('max_display_event',64)
+
+_HTML_EVENT_HEAD = '''
+<div class="dapp-group mt-5 mb-3">
+<h2 class="text-center">%s</h2>
+<hr class="mb-3" />
+<div class="row justify-content-md-center"><div class="col-md-12 col-lg-10 col-xl-8">
+<div class="list-group mt-4 mb-4" role="tablist" id="stat-table-area">'''
+
+_HTML_EVENT = '''
+<a class="list-group-item list-group-item-action" data-index="%s" data-bs-toggle="list" role="tab">
+  <small>%s</small><br><span>%s</span>
+</a>'''
+
+_HTML_EVENT_TAIL = '''
+</div>
+</div></div>
+'''
+
+_re_num = re.compile(r'^\d+$')
+
+def build_ev_center(ev_dir, lang_idx, ext):
+  dir_name = os.path.split(ev_dir)[-1]
+  file_last = os.path.join(ev_dir,'last')
+  
+  content = []
+  if os.path.isfile(file_last):
+    curr_name = open(file_last,'rt').read().splitlines()[0].strip()
+    if _re_num.match(curr_name):
+      file_curr = os.path.join(ev_dir,curr_name)
+      while os.path.isfile(file_curr) and len(content) < MAX_EVENTS:
+        try:
+          b = open(file_curr,'rt').read().splitlines()
+          prev = b.pop(0).strip()
+          titl = b.pop(0).strip()
+          content.append((curr_name,titl))
+          
+          if prev == '0' or not _re_num.match(prev): break
+          
+          curr_name = prev
+          file_curr = os.path.join(ev_dir,curr_name)
+        except:
+          traceback.print_exc()
+          break
+  
+  ret = ''
+  if content:
+    ret += _HTML_EVENT_HEAD % (cfg['translate2'][lang_idx],)
+    for s_tm,titl in content:
+      t = tuple(time.localtime(int(s_tm)))
+      s = '%i-%02i-%02i %02i:%02i:%02i' % t[:6]
+      ret += _HTML_EVENT % (dir_name+'/'+s_tm,s,titl)
+    ret += _HTML_EVENT_TAIL
+  return ret
+
+if __name__ == '__main__':
+  lang_idx = 0
+  for _,ext in lang_list:
+    s = build_dapp_group(lang_idx,ext)
+    
+    ev_dir = os.path.join(base_dir,'events')
+    if ext: ev_dir += '_' + ext
+    if os.path.isdir(ev_dir):
+      s += build_ev_center(ev_dir,lang_idx,ext)
+    
+    s += _HTML_TAIL
+    
+    f_name = 'index_' + ext + '.html' if ext else 'index.html'
+    with open(os.path.join(base_dir,f_name),'wt') as f:
+      f.write(s)
+    
+    print('success write file: ' + f_name)
+    lang_idx += 1
+  
+  print()

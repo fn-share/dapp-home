@@ -1,1 +1,134 @@
-for test
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="//www.fn-share.com/www/css/bootstrap.min.css" rel="stylesheet">
+<title>fn-share 小程序</title>
+</head>
+<body>
+
+<style>
+.dapp-icon {
+  position: relative;
+  top: -20%;
+  width: 72px;
+  height: 72px;
+}
+.copy-it:hover {
+  opacity: 0.5;
+}
+</style>
+
+<div class="container">
+<h1 class='text-center'>fn-share 小程序列表</h1>
+<div class="dapp-group mt-5 mb-3">
+<h2 class="text-center">影音网关</h2>
+<hr class="mb-4" />
+
+<div class="row mt-2">
+  <div class="col-3 text-end">
+    <img class="dapp-icon" src="release/alist_cfg.png" />
+  </div>
+  <div class="col-3"><a href="alist_cfg/index.html" target="_blank">AList配置器</a><br>alist_cfg 1.0</div>
+  <div class="col-6">版本安装包 &nbsp;<svg class="copy-it" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><br><span class="url-content font-monospace" data-args="name=010.AList配置器">release/alist_cfg_1_0.zip</span></div>
+</div>
+
+<div class="row mt-2">
+  <div class="col-3 text-end">
+    <img class="dapp-icon" src="release/yunso_play.png" />
+  </div>
+  <div class="col-3"><a href="yunso_play/index.html" target="_blank">云搜播</a><br>yunso_play 1.0</div>
+  <div class="col-6">版本安装包 &nbsp;<svg class="copy-it" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><br><span class="url-content font-monospace" data-args="">release/yunso_play_1_0.zip</span></div>
+</div>
+
+</div>  <!--- end of dapp-group --->
+
+<div class="dapp-group mt-5 mb-3">
+<h2 class="text-center">最近事件</h2>
+<hr class="mb-3" />
+<div class="row justify-content-md-center"><div class="col-md-12 col-lg-10 col-xl-8">
+<div class="list-group mt-4 mb-4" role="tablist" id="stat-table-area">
+<a class="list-group-item list-group-item-action" data-index="events/1728011568" data-bs-toggle="list" role="tab">
+  <small>2024-10-04 11:12:48</small><br><span>NBC NAS 上线供调试</span>
+</a>
+<a class="list-group-item list-group-item-action" data-index="events/1728007968" data-bs-toggle="list" role="tab">
+  <small>2024-10-04 10:12:48</small><br><span>创建 ev_center 项目</span>
+</a>
+</div>
+</div></div>
+
+</div>  <!--- end of container --->
+
+<div class="modal" tabindex="-1" id="event-dialog">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="justify-content:center">
+        <h5 class="modal-title"></h5>
+      </div>
+      <div class="modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<script src="//www.fn-share.com/www/js/jquery-3.6.0.slim.min.js"></script>
+<script src="//www.fn-share.com/www/js/popper.min.js"></script>
+<script src="//www.fn-share.com/www/js/bootstrap.min.js"></script>
+
+<script>
+function wait__(promise_obj, wait) {
+  var abort_fn = null;
+  let abortable_promise = Promise.race([ promise_obj,
+    new Promise( function(resolve, reject) {
+      abort_fn = function() { reject(new Error('TIMEOUT')) };
+    })
+  ]);
+  
+  setTimeout(()=>abort_fn(),wait);
+  return abortable_promise;
+}
+
+$( () => {
+  $('svg.copy-it').on('click', ev => {
+    let owner = $(ev.target).parent();
+    let urlNode = owner.find('.url-content');
+    let url = urlNode.text();
+    if (!url) return;
+    
+    url = $('<a href="' + url + '"></a>');
+    url = url.prop('href')
+    if (url) {
+      let args = urlNode.data('args') || '';
+      if (args) url += '?' + args;
+      navigator.clipboard.writeText(url).then( () => alert('URL copied!') );
+    }
+  });
+  
+  $('#stat-table-area').on('click', ev => {
+    let currItem = $('#stat-table-area .list-group-item.active');
+    if (currItem.length == 0) return;
+    
+    let url = currItem.data('index');
+    wait__(fetch(url),30000).then( res => {
+      if (res.status == 200)
+        return res.text();
+      else return null;
+    }, e => null ).then( data => {
+      if (typeof data == 'string') {
+        let b = data.split(/[\r\n]+/);
+        if (b.length >= 3) {
+          b.shift();
+          let titl = b.shift();
+          let body = b.join('\n');
+          $('#event-dialog .modal-title').html(titl);
+          $('#event-dialog .modal-body').html(body);
+          $('#event-dialog').modal('show');
+        }
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
