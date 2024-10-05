@@ -270,9 +270,11 @@ def dump_last_ver(ev_dir, lang_idx):
       name = dapp['name'][lang_idx]
       package = dapp['package'][lang_idx]
       parameter = dapp['parameter'][lang_idx]
+      desc = dapp['desc'][lang_idx]
       
       with open(os.path.join(ev_dir,'last_'+dapp_id+'.json'),'wt') as f:
-        info = {'id':dapp_id,'last_ver':ver,'favicon':favicon,'name':name,'package':package,'parameter':parameter}
+        info = { 'id':dapp_id,'last_ver':ver,'favicon':favicon,'name':name,
+          'package':package,'parameter':parameter,'desc':desc }
         f.write(json.dumps(info,indent=2))
 
 if __name__ == '__main__':

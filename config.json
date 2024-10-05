@@ -13,14 +13,16 @@
           "favicon": "release/alist_cfg.png",
           "name": ["AList配置器"],
           "package": ["release/alist_cfg_1_0.zip"],
-          "parameter": ["name=010.AList配置器"]
+          "parameter": ["name=010.AList配置器"],
+          "desc": ["版本已正式发布，请升级"]
         },
         { "id": "yunso_play",
           "version": "1.0",
           "favicon": "release/yunso_play.png",
           "name": ["云搜播"],
           "package": ["release/yunso_play_1_0.zip"],
-          "parameter": [""]
+          "parameter": [""],
+          "desc": ["版本已正式发布，请升级"]
         }
       ]
     }
