@@ -9,17 +9,17 @@
       
       "dapps": [
         { "id": "alist_cfg",
-          "name": ["AList配置器"],
           "version": "1.0",
           "favicon": "release/alist_cfg.png",
-          "package": "release/alist_cfg_1_0.zip",
+          "name": ["AList配置器"],
+          "package": ["release/alist_cfg_1_0.zip"],
           "parameter": ["name=010.AList配置器"]
         },
         { "id": "yunso_play",
-          "name": ["云搜播"],
           "version": "1.0",
           "favicon": "release/yunso_play.png",
-          "package": "release/yunso_play_1_0.zip",
+          "name": ["云搜播"],
+          "package": ["release/yunso_play_1_0.zip"],
           "parameter": [""]
         }
       ]

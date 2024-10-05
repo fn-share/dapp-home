@@ -22,7 +22,7 @@
 </style>
 
 <div class="container">
-<h1 class='text-center'>fn-share 小程序列表</h1>
+<h1 class='text-center mt-3'>fn-share 小程序列表</h1>
 <div class="dapp-group mt-5 mb-3">
 <h2 class="text-center">影音网关</h2>
 <hr class="mb-4" />
@@ -108,9 +108,10 @@ $( () => {
   $('#stat-table-area').on('click', ev => {
     let currItem = $('#stat-table-area .list-group-item.active');
     if (currItem.length == 0) return;
-    
     let url = currItem.data('index');
-    wait__(fetch(url),30000).then( res => {
+    if (!url) return;
+    
+    wait__(fetch(url),20000).then( res => {
       if (res.status == 200)
         return res.text();
       else return null;
@@ -126,6 +127,7 @@ $( () => {
           $('#event-dialog').modal('show');
         }
       }
+      else alert('Request failed, please retry later');
     });
   });
 });

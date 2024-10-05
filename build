@@ -154,10 +154,11 @@ def build_group(group, lang_idx, lang_ext):
   dapps = group.get('dapps',[])
   for dapp in dapps:
     dapp_id = dapp['id']
-    name = dapp['name'][lang_idx]
     ver = dapp['version']
-    package = dapp['package']
     favicon = dapp['favicon']
+    
+    name = dapp['name'][lang_idx]
+    package = dapp['package'][lang_idx]
     
     doc_dir = dapp_id + ('_' + lang_ext if lang_ext else '')
     doc_url = doc_dir + '/index.html' if os.path.isdir(os.path.join(base_dir,doc_dir)) else ''
@@ -215,7 +216,7 @@ _HTML_EVENT_TAIL = '''
 
 _re_num = re.compile(r'^\d+$')
 
-def build_ev_center(ev_dir, lang_idx, ext):
+def build_ev_center(ev_dir, lang_idx):
   dir_name = os.path.split(ev_dir)[-1]
   file_last = os.path.join(ev_dir,'last')
   
@@ -249,6 +250,14 @@ def build_ev_center(ev_dir, lang_idx, ext):
     ret += _HTML_EVENT_TAIL
   return ret
 
+def dump_last_ver(ev_dir, lang_idx):
+  for group in cfg.get('groups',[]):
+    dapps = group.get('dapps',[])
+    for dapp in dapps:
+      dapp_id = dapp['id']
+      with open(os.path.join(ev_dir,'last_'+dapp_id+'.json'),'wt') as f:
+        f.write(json.dumps(dapp,indent=2))
+
 if __name__ == '__main__':
   lang_idx = 0
   for _,ext in lang_list:
@@ -257,7 +266,8 @@ if __name__ == '__main__':
     ev_dir = os.path.join(base_dir,'events')
     if ext: ev_dir += '_' + ext
     if os.path.isdir(ev_dir):
-      s += build_ev_center(ev_dir,lang_idx,ext)
+      s += build_ev_center(ev_dir,lang_idx)
+      dump_last_ver(ev_dir,lang_idx)
     
     s += _HTML_TAIL
     

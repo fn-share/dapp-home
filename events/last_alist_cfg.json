@@ -1,0 +1,14 @@
+{
+  "id": "alist_cfg",
+  "version": "1.0",
+  "favicon": "release/alist_cfg.png",
+  "name": [
+    "AList\u914d\u7f6e\u5668"
+  ],
+  "package": [
+    "release/alist_cfg_1_0.zip"
+  ],
+  "parameter": [
+    "name=010.AList\u914d\u7f6e\u5668"
+  ]
+}
