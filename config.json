@@ -26,6 +26,7 @@
     }
   ],
   
+  "author": "fn-share.com",
   "max_display_event": 64,
   "translate2": ["最近事件"]
 }

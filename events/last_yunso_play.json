@@ -1,14 +1,8 @@
 {
   "id": "yunso_play",
-  "version": "1.0",
+  "last_ver": "1.0",
   "favicon": "release/yunso_play.png",
-  "name": [
-    "\u4e91\u641c\u64ad"
-  ],
-  "package": [
-    "release/yunso_play_1_0.zip"
-  ],
-  "parameter": [
-    ""
-  ]
+  "name": "\u4e91\u641c\u64ad",
+  "package": "release/yunso_play_1_0.zip",
+  "parameter": ""
 }

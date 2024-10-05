@@ -255,8 +255,15 @@ def dump_last_ver(ev_dir, lang_idx):
     dapps = group.get('dapps',[])
     for dapp in dapps:
       dapp_id = dapp['id']
+      ver = dapp['version']
+      favicon = dapp['favicon']
+      name = dapp['name'][lang_idx]
+      package = dapp['package'][lang_idx]
+      parameter = dapp['parameter'][lang_idx]
+      
       with open(os.path.join(ev_dir,'last_'+dapp_id+'.json'),'wt') as f:
-        f.write(json.dumps(dapp,indent=2))
+        info = {'id':dapp_id,'last_ver':ver,'favicon':favicon,'name':name,'package':package,'parameter':parameter}
+        f.write(json.dumps(info,indent=2))
 
 if __name__ == '__main__':
   lang_idx = 0
