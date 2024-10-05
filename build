@@ -220,25 +220,35 @@ def build_ev_center(ev_dir, lang_idx):
   dir_name = os.path.split(ev_dir)[-1]
   file_last = os.path.join(ev_dir,'last')
   
-  content = []
+  content = []; all_id = []
   if os.path.isfile(file_last):
     curr_name = open(file_last,'rt').read().splitlines()[0].strip()
     if _re_num.match(curr_name):
       file_curr = os.path.join(ev_dir,curr_name)
-      while os.path.isfile(file_curr) and len(content) < MAX_EVENTS:
+      while os.path.isfile(file_curr):
         try:
           b = open(file_curr,'rt').read().splitlines()
           prev = b.pop(0).strip()
           titl = b.pop(0).strip()
-          content.append((curr_name,titl))
           
-          if prev == '0' or not _re_num.match(prev): break
+          all_id.insert(0,curr_name)
+          if len(content) < MAX_EVENTS:
+            content.append((curr_name,titl))
+          
+          if prev == '0': break
+          if not _re_num.match(prev):
+            print('!warning: invalid event ID (%s)' % (prev,))
+            break
           
           curr_name = prev
           file_curr = os.path.join(ev_dir,curr_name)
         except:
           traceback.print_exc()
           break
+  
+  if all_id:
+    with open(os.path.join(ev_dir,'all'),'wt') as f:
+      f.write('\n'.join(all_id))
   
   ret = ''
   if content:
