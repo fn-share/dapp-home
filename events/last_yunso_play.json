@@ -3,7 +3,7 @@
   "last_ver": "1.0",
   "favicon": "release/yunso_play.png",
   "name": "\u4e91\u641c\u64ad",
-  "package": "release/yunso_play_1_0.zip",
-  "parameter": "",
-  "desc": "\u7248\u672c\u5df2\u6b63\u5f0f\u53d1\u5e03\uff0c\u8bf7\u5347\u7ea7"
+  "package": "release/yunso_play_1.0.0.zip",
+  "parameter": "name=011.\u4e91\u641c\u64ad",
+  "desc": "\u6b63\u5f0f\u53d1\u884c\u9996\u4e2a\u7248\u672c"
 }

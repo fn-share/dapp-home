@@ -1,0 +1,9 @@
+{
+  "id": "ev_center",
+  "last_ver": "1.0",
+  "favicon": "release/ev_center.png",
+  "name": "\u4e8b\u4ef6\u4e2d\u5fc3",
+  "package": "release/ev_center_1.0.0.zip",
+  "parameter": "name=000.\u4e8b\u4ef6\u4e2d\u5fc3",
+  "desc": "\u6b63\u5f0f\u53d1\u884c\u9996\u4e2a\u7248\u672c"
+}

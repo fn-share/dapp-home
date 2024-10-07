@@ -1,34 +1,42 @@
 {
   "language":[["中文",""]],
-  "title": ["fn-share 小程序"],
-  "header": ["<h1 class='text-center mt-3'>fn-share 小程序列表</h1>"],
+  "title": ["NBC NAS 小程序"],
+  "header": ["<h1 class='text-center mt-3'>NBC NAS 小程序列表</h1>"],
   "translate1": ["版本安装包"],
   
   "groups": [
     { "desc": ["影音网关"],
       
       "dapps": [
+        { "id": "ev_center",
+          "version": "1.0",
+          "favicon": "release/ev_center.png",
+          "name": ["事件中心"],
+          "package": ["release/ev_center_1.0.0.zip"],
+          "parameter": ["name=000.事件中心"],
+          "desc": ["正式发行首个版本"]
+        },
         { "id": "alist_cfg",
           "version": "1.0",
           "favicon": "release/alist_cfg.png",
           "name": ["AList配置器"],
-          "package": ["release/alist_cfg_1_0.zip"],
+          "package": ["release/alist_cfg_1.0.0.zip"],
           "parameter": ["name=010.AList配置器"],
-          "desc": ["版本已正式发布，请升级"]
+          "desc": ["正式发行首个版本"]
         },
         { "id": "yunso_play",
           "version": "1.0",
           "favicon": "release/yunso_play.png",
           "name": ["云搜播"],
-          "package": ["release/yunso_play_1_0.zip"],
-          "parameter": [""],
-          "desc": ["版本已正式发布，请升级"]
+          "package": ["release/yunso_play_1.0.0.zip"],
+          "parameter": ["name=011.云搜播"],
+          "desc": ["正式发行首个版本"]
         }
       ]
     }
   ],
   
-  "author": "fn-share.com",
+  "author": "nbc-nas.cn",
   "max_display_event": 64,
   "translate2": ["最近事件"]
 }
