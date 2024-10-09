@@ -37,7 +37,7 @@
   ],
   
   "author_id": "nas.nb-chain.cn",
-  "author_name": ["NBC NAS"],
+  "author_name": "NBC NAS",
   "max_display_event": 64,
   "translate2": ["最近事件"]
 }
