@@ -186,7 +186,8 @@ def build_dapp_group(lang_idx, lang_ext):
   
   s_title  = cfg['title'][lang_idx]
   s_header = cfg['header'][lang_idx]
-  s = _HTML_HEAD1 + s_title + _HTML_HEAD2 + s_header
+  s_abstract = cfg['abstract'][lang_idx]
+  s = _HTML_HEAD1 + s_title + _HTML_HEAD2 + s_header + s_abstract
   if lang:
     s += '\n<div class="text-center mb-5">' + lang + '</div>'
   

@@ -2,6 +2,7 @@
   "language":[["中文",""]],
   "title": ["NBC NAS 小程序"],
   "header": ["<h1 class='text-center mt-3'>NBC NAS 小程序列表</h1>"],
+  "abstract": ["<p class='text-center mt-4 mb-4'>本网页仅用作 demo 演示！</p>"],
   "translate1": ["版本安装包"],
   
   "groups": [
