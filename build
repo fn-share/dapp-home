@@ -19,6 +19,9 @@ with open(cfg_file,'rt') as f:
 lang_list = cfg.get('language',[])
 if not lang_list: lang_list = [['Default','']]
 
+_html5_res = '//www.fn-share.com/www/'
+html5_res  = cfg.get('html5_resource',_html5_res)
+
 _HTML_HEAD1 = '''<!DOCTYPE html>
 <html lang="en">
 
@@ -26,7 +29,7 @@ _HTML_HEAD1 = '''<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="//www.fn-share.com/www/css/bootstrap.min.css" rel="stylesheet">
-<title>'''
+<title>'''.replace(_html5_res,html5_res)
 
 _HTML_HEAD2 = '''</title>
 </head>
@@ -123,7 +126,7 @@ $( () => {
 </script>
 </body>
 </html>
-'''
+'''.replace(_html5_res,html5_res)
 
 _HTML_GROUP_HEAD = '''
 <div class="dapp-group mt-5 mb-3">
