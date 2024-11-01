@@ -14,7 +14,7 @@ def is_uncache(s):
 
 _re_num = re.compile(r'^\d+$')
 
-def event_file_ok(s):
+def is_event_file(s):
   return s == 'last' or _re_num.match(s) or (s[:5] == 'last_' and s[-5:] == '.json')
 
 class NoCacheHttpHandler(BaseHTTPRequestHandler):
@@ -50,11 +50,13 @@ class NoCacheHttpHandler(BaseHTTPRequestHandler):
       path_arg = self.path[1:].split('?',maxsplit=1)
       url_path = path_arg[0]
       
-      events_base = os.path.join(HTTP_SERVER_AT,'events')
-      if url_path == 'events/':    # list event file
+      # step 1: list event file, for "/events/"  "/events_en/"  ...
+      if url_path[-1:] == '/' and len(url_path.split('/')) == 2:
+        event_folder = url_path[:-1]
+        events_base = os.path.join(HTTP_SERVER_AT,event_folder)
         ret = []; b = os.listdir(events_base)
         for item in b:
-          if event_file_ok(item) and os.path.isfile(os.path.join(events_base,item)):
+          if is_event_file(item) and os.path.isfile(os.path.join(events_base,item)):
             ret.append(item)
         ret.sort()
         
@@ -65,7 +67,9 @@ class NoCacheHttpHandler(BaseHTTPRequestHandler):
         return
       # else, next will save data.content to file
       
-      if url_path == 'config.json' or (url_path[:7] == 'events/' and event_file_ok(url_path[7:])):
+      # step 2: save file, "/config.json"  "/events/xxx"  "/events_en/xxx"  ...
+      b = url_path.split('/')
+      if url_path == 'config.json' or (len(b) == 2 and is_event_file(b[1])):
         n = int(self.headers.get('Content-Length',0))
         try:
           data = json.loads(self.rfile.read(n))
@@ -78,8 +82,7 @@ class NoCacheHttpHandler(BaseHTTPRequestHandler):
           return
         
         ctx = base64.b64decode(data.get('content','')).decode('utf-8')
-        f_name = os.path.sep.join(url_path.split('/'))
-        with open(os.path.join(HTTP_SERVER_AT,f_name),'wt') as f:
+        with open(os.path.join(HTTP_SERVER_AT,os.path.sep.join(b)),'wt') as f:
           f.write(ctx)
         
         self.send_response(200)
@@ -88,6 +91,7 @@ class NoCacheHttpHandler(BaseHTTPRequestHandler):
         self.wfile.write(b'{"result":"success"}')
         return
       
+      # not support others
       self.send_error(404,'NOT_FOUND')
     
     except:
